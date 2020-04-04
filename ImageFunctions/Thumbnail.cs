@@ -1,17 +1,16 @@
-/*
-NAME: Tyler Buth
-ID: 0933168
-DATE: March 28, 2020
-COURSE: CIS4010
-ASSIGNMENT: 3
-*/
-
 using Azure.Storage.Blobs;
 using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -30,6 +29,7 @@ namespace ImageFunctions
             return blobClient.Name;
         }
 
+
         [FunctionName("Thumbnail")]
         public static async Task Run(
             [EventGridTrigger]EventGridEvent eventGridEvent,
@@ -41,15 +41,12 @@ namespace ImageFunctions
                 if (input != null)
                 {
                     var createdEvent = ((JObject)eventGridEvent.Data).ToObject<StorageBlobCreatedEventData>();
-                    var outContainerName = Environment.GetEnvironmentVariable("OUTPUT_CONTAINER_NAME");
-                    var blobServiceClient = new BlobServiceClient(BLOB_STORAGE_CONNECTION_STRING);
-                    var blobContainerClient = blobServiceClient.GetBlobContainerClient(outContainerName);
-                    await blobContainerClient.UploadBlobAsync(blobName, input);
 
-                    else
-                    {
-                        log.LogInformation($"error with file: {createdEvent.Url}");
-                    }
+                    var thumbContainerName = Environment.GetEnvironmentVariable("THUMBNAIL_CONTAINER_NAME");
+                    var blobServiceClient = new BlobServiceClient(BLOB_STORAGE_CONNECTION_STRING);
+                    var blobContainerClient = blobServiceClient.GetBlobContainerClient(thumbContainerName);
+                    var blobName = GetBlobNameFromUrl(createdEvent.Url);
+                    await blobContainerClient.UploadBlobAsync(blobName, output);
                 }
             }
             catch (Exception ex)
