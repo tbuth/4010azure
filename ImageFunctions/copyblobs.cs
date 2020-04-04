@@ -41,6 +41,9 @@ namespace ImageFunctions
                 if (input != null)
                 {
                     var createdEvent = ((JObject)eventGridEvent.Data).ToObject<StorageBlobCreatedEventData>();
+                    var outContainerName = Environment.GetEnvironmentVariable("OUTPUT_CONTAINER_NAME");
+                    var blobServiceClient = new BlobServiceClient(BLOB_STORAGE_CONNECTION_STRING);
+                    var blobContainerClient = blobServiceClient.GetBlobContainerClient(outContainerName);
                     await blobContainerClient.UploadBlobAsync(blobName, input);
 
                     else
