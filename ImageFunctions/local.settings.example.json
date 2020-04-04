@@ -3,7 +3,7 @@
   "Values": {
     "AzureWebJobsStorage": "<STORAGE_ACCOUNT_CONNECTION_STRING>",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "OUTPUT_CONTAINER_NAME": "thumbnail",
+    "OUTPUT_CONTAINER_NAME": "output",
     "THUMBNAIL_WIDTH": "100",
     "datatype": "binary"
   }
